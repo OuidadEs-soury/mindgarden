@@ -5,56 +5,42 @@ import HabitList from "./components/HabitList";
 export default function App() {
   const [habits, setHabits] = useState([]);
 
+  const API = "http://localhost:5000/habits";
+
   useEffect(() => {
-    const saved = localStorage.getItem("habits");
-    if (saved) setHabits(JSON.parse(saved));
+    fetch(API)
+      .then((res) => res.json())
+      .then((data) => setHabits(data));
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("habits", JSON.stringify(habits));
-  }, [habits]);
+  const addHabit = async (name) => {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name })
+    });
 
-  const addHabit = (name) => {
-    const newHabit = {
-      id: Date.now(),
-      name,
-      streak: 0,
-      lastDone: null
-    };
+    const newHabit = await res.json();
     setHabits([...habits, newHabit]);
   };
 
-  const completeHabit = (id) => {
-    const today = new Date().toDateString();
+  const completeHabit = async (id) => {
+    await fetch(`${API}/${id}`, { method: "PUT" });
 
-    setHabits(
-      habits.map((h) => {
-        if (h.id !== id) return h;
-
-        if (h.lastDone === today) return h;
-
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        const isStreak = h.lastDone === yesterday.toDateString();
-
-        return {
-          ...h,
-          streak: isStreak ? h.streak + 1 : 1,
-          lastDone: today
-        };
-      })
-    );
+    const updated = await fetch(API).then((res) => res.json());
+    setHabits(updated);
   };
 
-  const deleteHabit = (id) => {
+  const deleteHabit = async (id) => {
+    await fetch(`${API}/${id}`, { method: "DELETE" });
+
     setHabits(habits.filter((h) => h.id !== id));
   };
 
   return (
     <div className="app">
-      <h1>🌱 MindGarden</h1>
-      <p className="subtitle">Grow your habits like plants</p>
+      <h1>🌱 MindGarden PRO</h1>
+      <p className="subtitle">Now powered by a real backend</p>
 
       <HabitForm onAdd={addHabit} />
       <HabitList
