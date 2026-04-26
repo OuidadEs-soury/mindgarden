@@ -1,25 +1,24 @@
 import React, { useState } from "react";
 
-export default function HabitForm({ onAdd }) {
+export default function HabitForm({ token }) {
   const [input, setInput] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
-
-    onAdd(input);
-    setInput("");
+  const add = async () => {
+    await fetch("http://localhost:5000/api/habits", {
+      method: "POST",
+      headers: {
+        "Content-Type":"application/json",
+        "authorization": token
+      },
+      body: JSON.stringify({ name: input })
+    });
+    window.location.reload();
   };
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder="Add a new habit..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
-      <button type="submit">Add</button>
-    </form>
+    <div className="form">
+      <input onChange={e=>setInput(e.target.value)} />
+      <button onClick={add}>Add</button>
+    </div>
   );
 }
