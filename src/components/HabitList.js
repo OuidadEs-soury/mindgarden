@@ -1,20 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import HabitItem from "./HabitItem";
 
-export default function HabitList({ habits, onComplete, onDelete }) {
-  if (habits.length === 0) {
-    return <p className="empty">No habits yet 🌿</p>;
-  }
+export default function HabitList({ token }) {
+  const [habits, setHabits] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/habits", {
+      headers: { authorization: token }
+    })
+      .then(res => res.json())
+      .then(setHabits);
+  }, []);
 
   return (
-    <div className="list">
-      {habits.map((habit) => (
-        <HabitItem
-          key={habit.id}
-          habit={habit}
-          onComplete={onComplete}
-          onDelete={onDelete}
-        />
+    <div>
+      {habits.map(h => (
+        <HabitItem key={h._id} habit={h} token={token} />
       ))}
     </div>
   );
