@@ -1,22 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const Habit = require("../models/Habit");
+const auth = require("../middleware/auth");
 
 // GET
-router.get("/", async (req, res) => {
-  const habits = await Habit.find();
+router.get("/", auth, async (req, res) => {
+  const habits = await Habit.find({ userId: req.user.id });
   res.json(habits);
 });
 
-// POST
-router.post("/", async (req, res) => {
-  const habit = new Habit({ name: req.body.name });
+// ADD
+router.post("/", auth, async (req, res) => {
+  const habit = new Habit({
+    name: req.body.name,
+    userId: req.user.id
+  });
+
   await habit.save();
   res.json(habit);
 });
 
 // COMPLETE
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   const habit = await Habit.findById(req.params.id);
   const today = new Date().toDateString();
 
@@ -35,7 +40,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   await Habit.findByIdAndDelete(req.params.id);
   res.json({ success: true });
 });
