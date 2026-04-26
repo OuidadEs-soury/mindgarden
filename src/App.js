@@ -1,51 +1,34 @@
-import React, { useEffect, useState } from "react";
-import HabitForm from "./components/HabitForm";
+import React, { useState } from "react";
+import Login from "./components/Login";
+import Register from "./components/Register";
 import HabitList from "./components/HabitList";
+import HabitForm from "./components/HabitForm";
 
 export default function App() {
-  const [habits, setHabits] = useState([]);
-  const API = "http://localhost:5000/habits";
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [showRegister, setShowRegister] = useState(false);
 
-  const fetchHabits = async () => {
-    const res = await fetch(API);
-    const data = await res.json();
-    setHabits(data);
-  };
-
-  useEffect(() => {
-    fetchHabits();
-  }, []);
-
-  const addHabit = async (name) => {
-    await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name })
-    });
-    fetchHabits();
-  };
-
-  const completeHabit = async (id) => {
-    await fetch(`${API}/${id}`, { method: "PUT" });
-    fetchHabits();
-  };
-
-  const deleteHabit = async (id) => {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
-    fetchHabits();
-  };
+  if (!token) {
+    return showRegister ? (
+      <Register onSwitch={() => setShowRegister(false)} />
+    ) : (
+      <Login
+        setToken={setToken}
+        onSwitch={() => setShowRegister(true)}
+      />
+    );
+  }
 
   return (
     <div className="app">
       <h1>🌱 MindGarden</h1>
-      <p className="subtitle">Track your growth beautifully</p>
+      <button onClick={() => {
+        localStorage.removeItem("token");
+        setToken(null);
+      }}>Logout</button>
 
-      <HabitForm onAdd={addHabit} />
-      <HabitList
-        habits={habits}
-        onComplete={completeHabit}
-        onDelete={deleteHabit}
-      />
+      <HabitForm token={token} />
+      <HabitList token={token} />
     </div>
   );
 }
