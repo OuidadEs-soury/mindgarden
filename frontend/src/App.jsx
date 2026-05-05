@@ -1,17 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </BrowserRouter>
+    <div style={{ color: "white", padding: "40px" }}>
+      <h1>🌿 MindGarden is working!</h1>
+      <p>If you see this → your setup is correct</p>
+    </div>
   );
 }
 
