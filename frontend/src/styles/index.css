@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 🌌 Background gradient */
 body {
   background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
+  font-family: sans-serif;
 }
 
-/* ✨ Glass card */
 .glass {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
