@@ -1,18 +1,25 @@
 import { useState, useEffect } from "react";
 
-export default function Timer() {
-  const [time, setTime] = useState(1500); // 25 min
+export default function Timer({ onFocusChange }) {
+  const [time, setTime] = useState(1500);
   const [running, setRunning] = useState(false);
 
   useEffect(() => {
+    Notification.requestPermission();
+  }, []);
+
+  useEffect(() => {
+    onFocusChange(running);
+
     if (!running) return;
 
     const interval = setInterval(() => {
       setTime(prev => {
         if (prev <= 0) {
+          new Notification("Session complete 🌿");
           clearInterval(interval);
           setRunning(false);
-          return 0;
+          return 1500;
         }
         return prev - 1;
       });
@@ -29,13 +36,11 @@ export default function Timer() {
 
   return (
     <div className="glass p-6 text-center">
-      <h2 className="text-xl mb-4">Focus Mode</h2>
-      <div className="text-4xl mb-4">{format(time)}</div>
+      <h2>Focus Mode</h2>
+      <div className="text-4xl">{format(time)}</div>
 
-      <button
-        onClick={() => setRunning(!running)}
-        className="bg-purple-500 px-4 py-2 rounded"
-      >
+      <button onClick={() => setRunning(!running)}
+        className="bg-purple-500 px-4 py-2 rounded mt-4">
         {running ? "Pause" : "Start"}
       </button>
     </div>
